@@ -3,12 +3,9 @@ package itest
 import (
 	"context"
 	"crypto/sha512"
-	"crypto/tls"
-	"net/http"
-
-	"github.com/lightninglabs/lightning-node-connect/itest/mockrpc"
 
 	"github.com/btcsuite/btcd/btcec"
+	"github.com/lightninglabs/lightning-node-connect/itest/mockrpc"
 	"github.com/lightninglabs/lightning-node-connect/mailbox"
 	"github.com/lightningnetwork/lnd/keychain"
 	"google.golang.org/grpc"
@@ -43,7 +40,7 @@ func (c *clientHarness) setConn(words []string) error {
 	ecdh := &keychain.PrivKeyECDH{PrivKey: privKey}
 
 	ctx := context.Background()
-	transportConn := mailbox.NewClientConn(ctx, receiveSID, sendSID)
+	transportConn := mailbox.NewGrpcClientConn(ctx, receiveSID, sendSID)
 	noiseConn := mailbox.NewNoiseGrpcConn(ecdh, nil, password[:])
 
 	dialOpts := []grpc.DialOption{
@@ -53,10 +50,6 @@ func (c *clientHarness) setConn(words []string) error {
 		grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(1024 * 1024 * 200),
 		),
-	}
-
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{
-		InsecureSkipVerify: true,
 	}
 
 	client, err := grpc.DialContext(ctx, c.serverAddr, dialOpts...)
