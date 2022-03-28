@@ -8,7 +8,7 @@ import (
 	"crypto/sha512"
 	"strings"
 
-	"github.com/btcsuite/btcd/btcec"
+	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/lightninglabs/lightning-node-connect/mailbox"
 	"github.com/lightningnetwork/lnd/keychain"
 	"google.golang.org/grpc"
@@ -24,7 +24,7 @@ func mailboxRPCConnection(mailboxServer,
 
 	sid := sha512.Sum512(password[:])
 
-	privKey, err := btcec.NewPrivateKey(btcec.S256())
+	privKey, err := btcec.NewPrivateKey()
 	if err != nil {
 		return nil, err
 	}
